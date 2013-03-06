@@ -12,10 +12,20 @@ LDFLAGS = -lrt -llapacke -lgsl -lgslcblas -lfftw3_omp -lfftw3 -lm
 # test: test.o discrete-convolutions.o
 # 	$(CC) $(CFLAGS) $(LIBS) -o test test.o discrete-convolutions.o 
 
-test-generalised-inverse-gaussian: generalised-inverse-gaussian.o
 
 test-multivariate-normal: multivariate-normal.o utilities.o
+multivariate-normal.o: utilities.o
 
-test-multivariate-generalised-hyperbolic: \
-	multivariate-generalised-hyperbolic.o generalised-inverse-gaussian.o \
-	multivariate-normal.o utilities.o
+test-generalised-inverse-gaussian: generalised-inverse-gaussian.o
+
+test-multivariate-generalised-hyperbolic: multivariate-generalised-hyperbolic.o generalised-inverse-gaussian.o multivariate-normal.o utilities.o
+
+test-univariate-generalised-hyperbolic: multivariate-generalised-hyperbolic.o generalised-inverse-gaussian.o multivariate-normal.o utilities.o
+
+test-trawl-process: trawl-process.o multivariate-generalised-hyperbolic.o generalised-inverse-gaussian.o multivariate-normal.o utilities.o
+
+simulate-trawl-process: trawl-process.o multivariate-generalised-hyperbolic.o generalised-inverse-gaussian.o multivariate-normal.o utilities.o
+
+
+
+
