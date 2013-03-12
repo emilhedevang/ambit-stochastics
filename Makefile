@@ -1,7 +1,7 @@
 
 CC      = gcc
 CFLAGS  = -g -Wall -std=c11 -O2 -fopenmp
-LDFLAGS = -lrt -llapacke -lgsl -lgslcblas -lfftw3_omp -lfftw3 -lm
+LDFLAGS = -lrt -lhdf5_hl -lhdf5 -llapacke -lgsl -lgslcblas -lfftw3_omp -lfftw3 -lm
 
 # discrete-convolutions.o: discrete-convolutions.c
 # 	$(CC) $(CFLAGS) -o discrete-convolutions.o -c discrete-convolutions.c 
@@ -26,6 +26,18 @@ test-trawl-process: trawl-process.o multivariate-generalised-hyperbolic.o genera
 
 simulate-trawl-process: trawl-process.o multivariate-generalised-hyperbolic.o generalised-inverse-gaussian.o multivariate-normal.o utilities.o
 
+test-argp: test-argp.o
 
+README: README.md
+	markdown README.md > README.html
 
+install: simulate-trawl-process README
+	cp simulate-trawl-process software/
+	cp README.md              software/
+	cp README.html            software/
 
+clean:
+	rm -f *.o *~ 
+
+dist-clean:
+	rm -f *.o *~ software/*

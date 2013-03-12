@@ -10,8 +10,10 @@
 #include <math.h>
 #include <assert.h>
 #include <string.h>
+#include <unistd.h>
 
 /* GNU Scientific Library */
+#include <gsl/gsl_integration.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 
@@ -21,6 +23,11 @@
 /* LAPACKE and BLAS */
 #include <lapacke.h>
 #include <atlas/cblas.h>
+
+/* HDF 5 */
+#include "hdf5.h"
+#include "hdf5_hl.h"
+
 
 /********************* 
  * Ambit Stochastics *
@@ -89,7 +96,6 @@ int normal_generator(int n_threads, gsl_rng **rng,
 int univariate_generalised_hyperbolic_generator(int n_threads, gsl_rng **rng, 
                                                 double volume, void *p, 
                                                 int64_t n, double *x);
-
 
 int trawl_process(
     int n_threads, gsl_rng **rng,

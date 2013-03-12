@@ -91,9 +91,9 @@ int trawl_process(
         break;
     }
         
+    /* Perform the simulation */
     double  acc    = 0.0;
     int64_t offset = 0;
-    
     for (int64_t i = 0; i < n_slices; i++) {
         err = (*generator)(n_threads, rng, v[i], generator_params, n + n_slices - i - 1, y);
         if (err) goto cleanup;
