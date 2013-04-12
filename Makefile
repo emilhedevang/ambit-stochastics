@@ -1,6 +1,6 @@
 
 CC      = gcc
-CFLAGS  = -g -Wall -std=c11 -O2 -fopenmp
+CFLAGS  = -g -std=c11 -Wall -Winline -O2 -fopenmp
 LDFLAGS = -lrt -lhdf5_hl -lhdf5 -llapacke -lgsl -lgslcblas -lfftw3_omp -lfftw3 -lm
 
 discrete-convolutions.o: discrete-convolutions.c

@@ -195,15 +195,6 @@ int main(int argc, char *argv[]) {
             err = -1;
             goto cleanup;
         }
-        
-        /* for (int i0 = 0; i0 < dims_pad[0]; i0++) { */
-        /*     for (int i1 = 0; i1 < dims_pad[1]; i1++) { */
-        /*         for (int i2 = 0; i2 < dims_pad[2]; i2++) */
-        /*             printf(" %g", x[j][i2 + dims_pad[2] * (i1 + dims_pad[1] * i0)]); */
-        /*         printf("\n"); */
-        /*     } */
-        /*     printf("\n"); */
-        /* } */
     }
     
 
@@ -223,9 +214,11 @@ int main(int argc, char *argv[]) {
         err = -1;
         goto cleanup;
     }
+    
     output_dataspace_id = H5Screate_simple(4, dims, NULL);
     output_dataset_id   = H5Dcreate(output_file_id, "/simulation", H5T_NATIVE_DOUBLE, output_dataspace_id, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     for (int j = 0; j < 3; j++) {
+        printf("j = %i\n", j);
         /* Define hyperslap in the file dataspace */
         offset[3] = j;
         count[3] = 1;
