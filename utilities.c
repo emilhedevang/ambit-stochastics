@@ -1,6 +1,33 @@
 #include "ambit-stochastics.h"
 
 
+gsl_rng **
+ambit_rng_alloc(int n) {
+    assert(n>0);
+    
+    const gsl_rng_type *rng_type = NULL;
+    gsl_rng **rng = NULL;
+    
+    gsl_rng_env_setup();
+    
+    rng_type = gsl_rng_default;
+    rng = malloc((n + 1) * sizeof(gsl_rng *));
+    assert(rng);
+    
+    for (int i = 0; i < n; ++i) {
+        rng[i] = gsl_rng_alloc(rng_type);
+        assert(rng[i]);
+        gsl_rng_set(rng[i], gsl_rng_default_seed + i);
+    }
+    rng[n] = NULL;
+    return rng;
+}
+
+void 
+ambit_rng_free(gsl_rng **rng) {
+    while(*rng)
+        gsl_rng_free(*rng++);
+}
 
 
 void print_array_double_3(int *dims, double *x) {

@@ -56,6 +56,12 @@ struct ambit_dense_array {
     size_t *strideembed; // derived from dimembed
 };
 
+size_t
+wrap_subscript(size_t sub, size_t dim);
+
+void
+increment_subscript(size_t *sub, int rank, size_t *dim);
+
 struct ambit_dense_array *
 ambit_dense_array_malloc (int rank, size_t *dim, size_t *dimembed);
 
@@ -105,6 +111,7 @@ size_t
 ambit_dense_array_linear_index_3d(struct ambit_dense_array *array, 
                                   size_t sub0, size_t sub1, size_t sub2);
 
+void ambit_dense_array_set(struct ambit_dense_array *a, R c);
 
 int
 ambit_dense_array_circular_embed (struct ambit_dense_array *a,
@@ -161,9 +168,9 @@ enum ambit_error_code {
  * generalised-inverse-gaussian
  */
 
-int generate_generalised_inverse_gaussian(int n_threads, gsl_rng **rng,
-                                          double lambda, double chi, double psi, 
-                                          ptrdiff_t n, double *x);
+int 
+generate_generalised_inverse_gaussian (gsl_rng **rng, struct ambit_dense_array *a, R lambda, R chi, R psi);
+
 
 /*
  * multivariate-generalised-hyperbolic

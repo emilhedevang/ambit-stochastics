@@ -74,6 +74,36 @@ ambit_dense_array_get_3d(struct ambit_dense_array *array, size_t sub0, size_t su
 }
 
 //
+// Utilities
+//
+
+void ambit_dense_array_set(struct ambit_dense_array *a, R c) {
+    size_t *sub0 = NULL;
+    size_t lin_idx0;
+    size_t inner_n = a->n / a->dim[0];
+    R c0;
+#pragma omp parallel            \
+    private(sub0, lin_idx0, c0) \
+    shared(a) 
+    {
+        sub0 = malloc(a->rank * sizeof(size_t));
+        c0   = c;
+#pragma omp for 
+        for (size_t i0 = 0; i0 < a->dim[0]; ++i0) {
+            sub0[0] = i0;
+            for (int j = 1; j < a->rank; ++j)
+                sub0[j] = 0;
+            for (size_t i = 0; i < inner_n; ++i) {
+                lin_idx0 = ambit_dense_array_linear_index(a, sub0);
+                a->data[lin_idx0] = c0;
+                increment_subscript(sub0, a->rank, a->dim);
+            }
+        }
+        free(sub0);
+    }    
+}
+
+//
 // Checks
 //
 
