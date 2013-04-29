@@ -1,5 +1,8 @@
 #include "ambit-stochastics.h"
 
+
+
+
 void print_array_double_3(int *dims, double *x) {
     for (int i0 = 0; i0 < dims[0]; i0++) {
         for (int i1 = 0; i1 < dims[1]; i1++) {

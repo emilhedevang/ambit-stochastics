@@ -1,9 +1,13 @@
 
 CC      = gcc
-CFLAGS  = -g -std=c11 -Wall -Winline -O2 -fopenmp
+CFLAGS  = -g -std=c11 -Wall -Winline -finline-functions -O3 -fopenmp
 LDFLAGS = -lrt -lhdf5_hl -lhdf5 -llapacke -lgsl -lgslcblas -lfftw3_omp -lfftw3 -lm
 
-discrete-convolutions.o: discrete-convolutions.c
+test-dense-arrays: dense-arrays.o discrete-fourier-transforms.o discrete-convolutions.o
+
+
+
+
 
 # test.o: test.c
 # 	$(CC) $(CFLAGS) -o test.o -c test.c 

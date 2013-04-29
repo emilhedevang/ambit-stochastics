@@ -1,3 +1,5 @@
+#define _XOPEN_SOURCE 700
+
 #ifndef AMBIT_STOCHASTICS_H
 #define AMBIT_STOCHASTICS_H
 
@@ -33,9 +35,95 @@
 #include <fftw3.h>
 
 
-/********************* 
- * Ambit Stochastics *
- *********************/
+//
+// Dense arrays
+//
+
+#define AMBIT_ALIGNMENT 32
+
+typedef double R;
+typedef fftw_complex C;
+
+struct ambit_dense_array {
+    // Primary fields
+    unsigned int rank;
+    size_t *dim;
+    size_t *dimembed;
+    R      *data;
+    // Derived fields
+    size_t n;            // product of dim
+    size_t nembed;       // product of dimembed
+    size_t *strideembed; // derived from dimembed
+};
+
+struct ambit_dense_array *
+ambit_dense_array_malloc (int rank, size_t *dim, size_t *dimembed);
+
+struct ambit_dense_array *
+ambit_dense_array_malloc_1d(size_t dim0);
+
+struct ambit_dense_array *
+ambit_dense_array_malloc_2d(size_t dim0, size_t dim1);
+
+struct ambit_dense_array *
+ambit_dense_array_malloc_3d(size_t dim0, size_t dim1, size_t dim2);
+
+void 
+ambit_dense_array_free (struct ambit_dense_array *array);
+
+bool 
+ambit_dense_array_valid (struct ambit_dense_array *a);
+
+bool
+ambit_dense_array_ranks_eq (struct ambit_dense_array *a, struct ambit_dense_array *b);
+
+bool
+ambit_dense_array_dims_eq (struct ambit_dense_array *a, struct ambit_dense_array *b);
+
+bool
+ambit_dense_array_dims_leq (struct ambit_dense_array *a, struct ambit_dense_array *b);
+
+bool 
+ambit_dense_array_fftw_r2c_embedded_tightly(struct ambit_dense_array *a);
+
+bool 
+ambit_dense_array_fftw_r2c_embedded(struct ambit_dense_array *a);
+
+void
+ambit_dense_array_fprintf (FILE *stream, struct ambit_dense_array *array, bool also_data);
+
+size_t
+ambit_dense_array_linear_index(struct ambit_dense_array *array, size_t *sub);
+
+size_t
+ambit_dense_array_linear_index_1d(struct ambit_dense_array *array, size_t sub0);
+
+size_t
+ambit_dense_array_linear_index_2d(struct ambit_dense_array *array, size_t sub0, size_t sub1);
+
+size_t
+ambit_dense_array_linear_index_3d(struct ambit_dense_array *array, 
+                                  size_t sub0, size_t sub1, size_t sub2);
+
+
+int
+ambit_dense_array_circular_embed (struct ambit_dense_array *a,
+                                  struct ambit_dense_array *b,
+                                  size_t *offset);
+
+//
+// Discrete Fourier Transforms
+//
+
+int
+ambit_dft_r2c_inplace(struct ambit_dense_array *a, int sign);
+
+int 
+ambit_circular_convolution_inplace(struct ambit_dense_array *k, struct ambit_dense_array *x);
+
+
+
+
 
 /* 
  * discrete-convolution
@@ -50,23 +138,23 @@ enum ambit_error_code {
 
 
 
-ptrdiff_t linear_index(int rank, int *dim, int *dimembed, int *sub);
+/* ptrdiff_t linear_index(int rank, int *dim, int *dimembed, int *sub); */
 
-void embed_array_double(int rank, 
-                        int *xdim, int *xdimembed, double *x, 
-                        int *ydim, int *ydimembed, double *y, 
-                        int *offset);
+/* void embed_array_double(int rank,  */
+/*                         int *xdim, int *xdimembed, double *x,  */
+/*                         int *ydim, int *ydimembed, double *y,  */
+/*                         int *offset); */
 
-void increment_subscript(int rank, int *dim, int *sub);
+//void increment_subscript(int rank, int *dim, int *sub);
 
-int ambit_circular_convolution_inplace(int rank, 
-                                       int *kdim, double *k, 
-                                       int *xdim, double *x);
+/* int ambit_circular_convolution_inplace(int rank,  */
+/*                                        int *kdim, double *k,  */
+/*                                        int *xdim, double *x); */
 
-int ambit_symmetric_odd_isotropic_circular_convolution_inplace(
-    int n_threads,
-    int n_k, double *k_abscissa, double *k_ordinate,
-    int dim, double delta_x, double *x1, double *x2, double *x3);
+/* int ambit_symmetric_odd_isotropic_circular_convolution_inplace( */
+/*     int n_threads, */
+/*     int n_k, double *k_abscissa, double *k_ordinate, */
+/*     int dim, double delta_x, double *x1, double *x2, double *x3); */
 
 
 /*
