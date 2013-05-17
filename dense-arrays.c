@@ -73,11 +73,67 @@ ambit_dense_array_get_3d(struct ambit_dense_array *array, size_t sub0, size_t su
     return array->data[ambit_dense_array_linear_index_3d(array, sub0, sub1, sub2)];
 }
 
+inline void
+ambit_dense_array_set(struct ambit_dense_array *array, size_t *sub, R value) {
+    array->data[ambit_dense_array_linear_index(array, sub)] = value;
+}
+
 //
 // Utilities
 //
 
-void ambit_dense_array_set(struct ambit_dense_array *a, R c) {
+void
+ambit_dense_array_parallel_fill(struct ambit_dense_array *a,
+                                R (*func)(const void *, const void *),
+                                const void  *p,  size_t p_size,
+                                const void **pp, size_t pp_size) {
+    size_t *sub = NULL;
+    void *p0    = NULL;
+    void *pp0   = NULL;
+    size_t inner_n;
+#pragma omp parallel      \
+    private(sub, inner_n, p0, pp0)    \
+    shared(a) 
+    {
+        inner_n = a->n / a->dim[0];
+        sub     = malloc(a->rank * sizeof(size_t));
+        assert(sub);
+        
+        if (p_size) {
+            p0 = malloc(p_size);
+            assert(p0);
+            memcpy(p0, p, p_size);
+        }
+        else 
+            p0 = NULL;
+        
+        if (pp_size) {
+            pp0 = malloc(pp_size);
+            assert(pp0);
+            memcpy(pp0, pp[omp_get_thread_num()], pp_size);
+        }
+        else 
+            pp0 = NULL;
+        
+#pragma omp for 
+        for (size_t i0 = 0; i0 < a->dim[0]; ++i0) {
+            sub[0] = i0;
+            for (int j = 1; j < a->rank; ++j)
+                sub[j] = 0;
+            for (size_t i = 0; i < inner_n; ++i) {
+                ambit_dense_array_set(a, sub, func(p0, pp0));
+                increment_subscript(sub, a->rank, a->dim);
+            }
+        }
+        free(sub);
+        free(p0);
+        free(pp0);
+    }    
+}
+
+
+void 
+ambit_dense_array_set_all(struct ambit_dense_array *a, R c) {
     size_t *sub0 = NULL;
     size_t lin_idx0;
     size_t inner_n = a->n / a->dim[0];
@@ -153,6 +209,17 @@ ambit_dense_array_dims_leq (struct ambit_dense_array *a, struct ambit_dense_arra
     for (int i = 0; i < a->rank; ++i)
         ok = ok && a->dim[i] <= b->dim[i];
     return ok;
+}
+
+
+inline bool 
+ambit_dense_array_embedded_tightly(struct ambit_dense_array *a) {
+    if (!ambit_dense_array_valid(a))
+        return false;
+    for (int i = 0; i < a->rank; ++i) 
+        if (a->dim[i] != a->dimembed[i]) 
+            return false;
+    return true;
 }
 
 inline bool 

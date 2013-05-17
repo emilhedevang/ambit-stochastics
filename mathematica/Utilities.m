@@ -8,12 +8,9 @@ IntegerLogScale::usage = "IntegerLogScale[a, b, n] gives at most n positive inte
 
 LogTake::usage = "LogTake[x, n] takes at most n elements indexed by an integer log scale from 1 to Length[x].";
 
-
 Begin["`Private`"]; (* Begin Private Context *)
 
-
 (* Logarithmic scales *)
-
 Clear[LogScale]
 LogScale[a_, b_, n_] := 
     Module[ {alpha, beta},
@@ -29,7 +26,6 @@ IntegerLogScale[a_, b_, n_] :=
 Clear[LogTake]
 LogTake[x_, n_] := 
   Part[x, IntegerLogScale[1, Length[x], n]];
-
 
 End[]; (* End Private Context *)
 

@@ -111,12 +111,21 @@ size_t
 ambit_dense_array_linear_index_3d(struct ambit_dense_array *array, 
                                   size_t sub0, size_t sub1, size_t sub2);
 
-void ambit_dense_array_set(struct ambit_dense_array *a, R c);
+void 
+ambit_dense_array_set_all(struct ambit_dense_array *a, R c);
+
+void
+ambit_dense_array_set(struct ambit_dense_array *array, size_t *sub, R value);
 
 int
 ambit_dense_array_circular_embed (struct ambit_dense_array *a,
                                   struct ambit_dense_array *b,
                                   size_t *offset);
+void
+ambit_dense_array_parallel_fill(struct ambit_dense_array *a,
+                                R (*func)(const void *, const void *),
+                                const void  *p,  size_t p_size,
+                                const void **pp, size_t pp_size);
 
 //
 // Discrete Fourier Transforms
@@ -196,9 +205,9 @@ int generate_multivariate_normal(int n_threads, gsl_rng **rng,
                                  double *mean, double *covariance,
                                  ptrdiff_t n, double *x);
 
-int generate_univariate_normal(int n_threads, gsl_rng **rng,
-                               double mean, double variance,
-                               ptrdiff_t n, double *x);
+int 
+generate_univariate_normal(gsl_rng **rng, struct ambit_dense_array *a, R mean, R variance);
+
 /* 
  * utilities
  */
