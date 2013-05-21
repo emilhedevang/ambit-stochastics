@@ -17,6 +17,8 @@ LogTake::usage         = "LogTake[x, n] gives approximately n logarithmically sp
 
 Begin["`Private`"] (* Begin Private Context *) 
 
+CovarianceFunctionFromSpectralDensityFunction[sdf_, lags_, tbl : (Table | ParallelTable) : Table] := Null;
+
 Clear[StructureFunction]
 StructureFunction[x_, lags_, order_, transform : (Identity | Abs) : Identity, tbl : (Table | ParallelTable) : Table] :=
     tbl[Mean[transform[Differences[x[[;; ;; l]]]] ^ order], {l, lags}];
