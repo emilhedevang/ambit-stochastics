@@ -9,4 +9,6 @@ Get["AmbitStochastics`GeneralisedHyperbolics`"]
 Get["AmbitStochastics`ReduceData`"]
 Get["AmbitStochastics`Gamma`"]
 Get["AmbitStochastics`SpectralDensities`"]
-
+Get["AmbitStochastics`SpatialRandomVectorFields`"]
+Get["AmbitStochastics`LevyIntegrals`"]
+Get["AmbitStochastics`NumericalDerivatives`"]

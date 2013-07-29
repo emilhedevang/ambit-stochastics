@@ -13,8 +13,8 @@ SimulateBSSBrownianIntegral::usage         = "FIXME";
 Begin["`Private`"] (* Begin Private Context *) 
 
 Clear[PrepareBSSDeterministicCoefficients]
-PrepareBSSDeterministicCoefficients[kernel_, delta_, n_Integer, sigmaOrder : (0 | 1), tbl : (Table | ParallelTable) : Table] /; delta > 0 && n > 0 :=
-    Switch[sigmaOrder,
+PrepareBSSDeterministicCoefficients[kernel_, delta_, n_Integer, order : (0 | 1), tbl : (Table | ParallelTable) : Table] /; delta > 0 && n > 0 :=
+    Switch[order,
         0, 
         {
             tbl[delta * NIntegrate[kernel[(j + u) * delta], {u, 0, 1}], {j, 0, n - 1}]
@@ -26,12 +26,12 @@ PrepareBSSDeterministicCoefficients[kernel_, delta_, n_Integer, sigmaOrder : (0 
         }
     ];
     
-PrepareBSSDeterministicCoefficients /: Parallelize[PrepareBSSDeterministicCoefficients[kernel_, delta_, n_, sigmaOrder_]] :=
-    PrepareBSSDeterministicCoefficients[kernel, delta, n, sigmaOrder, ParallelTable];
+PrepareBSSDeterministicCoefficients /: Parallelize[PrepareBSSDeterministicCoefficients[kernel_, delta_, n_, order_]] :=
+    PrepareBSSDeterministicCoefficients[kernel, delta, n, order, ParallelTable];
 
 Clear[PrepareBSSBrownianCoefficients]
-PrepareBSSBrownianCoefficients[kernel_, delta_, n_Integer, sigmaOrder : (0 | 1), tbl : (Table | ParallelTable) : Table] /; delta > 0 && n > 0 :=
-    Switch[sigmaOrder,
+PrepareBSSBrownianCoefficients[kernel_, delta_, n_Integer, order : (0 | 1), tbl : (Table | ParallelTable) : Table] /; delta > 0 && n > 0 :=
+    Switch[order,
         0, 
         {
     	   Sqrt @ tbl[delta * NIntegrate[kernel[(j + u) * delta] ^ 2, {u, 0, 1}], {j, 0, n - 1}]
@@ -43,15 +43,15 @@ PrepareBSSBrownianCoefficients[kernel_, delta_, n_Integer, sigmaOrder : (0 | 1),
     	}
     ];
 
-PrepareBSSBrownianCoefficients /: Parallelize[PrepareBSSBrownianCoefficients[kernel_, delta_, n_, sigmaOrder_]] :=
-    PrepareBSSBrownianCoefficients[kernel, delta, n, sigmaOrder, ParallelTable];
+PrepareBSSBrownianCoefficients /: Parallelize[PrepareBSSBrownianCoefficients[kernel_, delta_, n_, order_]] :=
+    PrepareBSSBrownianCoefficients[kernel, delta, n, order, ParallelTable];
 
 Clear[SimulateBSSDeterministicIntegral]
-SimulateBSSDeterministicIntegral[{G0_ ? NumberVectorQ}, sigma_] :=
-    ListConvolve[G0, sigma ^ 2];
+SimulateBSSDeterministicIntegral[{G0_ ? NumberVectorQ}, a_] :=
+    ListConvolve[G0, a];
 
-SimulateBSSDeterministicIntegral[{G0_ ? NumberVectorQ, G1_ ? NumberVectorQ}, sigma_] :=
-    With[{sigmaSquared = sigma ^ 2}, ListConvolve[G0, Most[sigmaSquared]] + ListConvolve[G1, Rest[sigmaSquared]]];
+SimulateBSSDeterministicIntegral[{G0_ ? NumberVectorQ, G1_ ? NumberVectorQ}, a_] :=
+    ListConvolve[G0, Most[a]] + ListConvolve[G1, Rest[a]];
 
 Clear[SimulateBSSBrownianIntegral]
 SimulateBSSBrownianIntegral[{G0_ ? NumberVectorQ}, sigma_] :=

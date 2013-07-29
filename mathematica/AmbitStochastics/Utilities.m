@@ -3,6 +3,10 @@
 BeginPackage["AmbitStochastics`Utilities`"]
 (* Exported symbols added here with SymbolName::usage *)  
 
+ListNames::usage = "ListNames[]"
+
+LogLogSlope::usage = "FIXME";
+
 StructureFunction::usage  = "StructureFunction[x, lags, order]";
 CorrelatorFunction::usage = "CorrelatorFunction[x, lags, {p, q}] calculates E[x(l)^p*x(0)^q] / (E[x^p]*E[x^q]) where l ranges over lags.";
 
@@ -17,11 +21,17 @@ LogTake::usage         = "LogTake[x, n] gives approximately n logarithmically sp
 
 Begin["`Private`"] (* Begin Private Context *) 
 
-CovarianceFunctionFromSpectralDensityFunction[sdf_, lags_, tbl : (Table | ParallelTable) : Table] := Null;
+Clear[ListNames]
+ListNames[pattern_ : "Global`*"] :=
+    TableForm @ SortBy[Select[{#, ByteCount[Symbol[#]]} & /@ Names["Global`*"], #[[2]] > 0 &], -#[[2]] &];
+
+Clear[LogLogSlope]
+LogLogSlope[xy_] :=
+    Transpose @ {xy[[1 ;; -2, 1]], Differences[Log[xy[[All, 2]]]]/ Differences[Log[xy[[All, 1]]]]};
 
 Clear[StructureFunction]
 StructureFunction[x_, lags_, order_, transform : (Identity | Abs) : Identity, tbl : (Table | ParallelTable) : Table] :=
-    tbl[Mean[transform[Differences[x[[;; ;; l]]]] ^ order], {l, lags}];
+    tbl[Mean[transform[(Drop[x, l] - Drop[x, -l])] ^ order], {l, lags}];
     
 StructureFunction /: Parallelize[StructureFunction[x_, lags_, order_, transform : (Identity | Abs) : Identity]] :=
     StructureFunction[x, lags, order, transform, ParallelTable];
